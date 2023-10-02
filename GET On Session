@@ -1,0 +1,16 @@
+*** Settings ***
+Library           GET On Session
+
+*** Test Cases ***
+API GET Request en Verificatie
+    ${url} =    Set Variable    https://reqres.in/api/users/2
+    ${headers} =    Create Dictionary    Accept=application/json
+
+    ${response} =    Get Request    ${url}    headers=${headers}
+
+    # Verifieer de statuscode
+    Should Be Equal As Strings    ${response.status_code}    200
+
+    # Log de API-respons naar de console
+    Log    API Response: ${response.text}
+

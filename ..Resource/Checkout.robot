@@ -1,5 +1,6 @@
 *** Settings ***
 Library           SeleniumLibrary
+Resource    Regtest.robot
 
 *** Variables ***
 ${Shopping}     ((//span[normalize-space()='Shopping cart'])[1]]
@@ -13,14 +14,67 @@ ${var}
 ${expected_text}    Thank you
 ${actual_text}     (//h1[normalize-space()='Thank you'])[1]
 ${First name}    Ben
+${sec_name}       Test 
 ${Last name}     blanko
 ${Email}         benblanko@gmail.com
 ${City}          Haarlem
 ${Address 1:}    Van laanstraat 10000
 ${Zip}           2022EE
 ${Phonenumber}    0689090909
+${URL15}         https://demowebshop.tricentis.com/register  
+${URL22}           https://demowebshop.tricentis.com/login
 
 *** Keywords ***
+
+Given De Gebruiker is op de loginpagina
+    Open Browser    ${URL22}    Chrome
+    Maximize Browser Window
+    Wait Until Page Contains    Register   
+
+When De Gebruiker logt in met bestaand email
+    Input Text    (//input[@id='Email'])[1]   ${random_email}
+    Input Text    (//input[@id='Password'])[1]   ${password}
+    Sleep    3
+    Click Element    (//input[@value='Log in'])[1]
+
+Then De Gebruiker is ingelogd
+    Sleep    5
+    Close Browser
+
+
+
+Given De gebruiker is op de registratiepagina
+    Open Browser    ${URL15}    Chrome
+    Maximize Browser Window
+    Wait Until Page Contains    Register
+    
+When De gebruiker vult de registratiegegevens in
+    Click Element    (//input[@id='gender-male'])[1]
+
+    ${first_name}    Generate Random First Name
+    ${last_name}     Generate Random Last Name
+
+    Input Text    (//input[@id='FirstName'])[1]     ${first_name}
+    Input Text    (//input[@id='LastName'])[1]      ${last_name}
+
+    Sleep    2s  #
+    ${random_email}=    Execute JavaScript    return Math.random().toString(36).substring(7) + "@example.com"
+    Input Text    (//input[@id='Email'])[1]    ${random_email}
+    Set Global Variable    ${random_email}
+    Sleep    3
+    Input Text    (//input[@id='Password'])[1]    ${password}
+    Input Text    (//input[@id='ConfirmPassword'])[1]    ${password}
+    Sleep    2
+
+And De gebruiker klikt op de registratieknop
+    Click Element    (//input[@id='register-button'])[1]
+    Sleep    3
+
+Then wordt de gebruiker geregistreerd en ingelogd
+    ${expected_text}    Set Variable    Your registration completed
+    ${actual_text}    Get Text    (//div[@class='result'])[1]    
+    Should Be Equal    ${actual_text}    ${expected_text}    
+
 Open Webshop
     Open Browser    ${URL}    ${BROWSER}    options=add_experimental_option("detach", True)
     Maximize Browser Window

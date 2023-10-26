@@ -6,6 +6,8 @@ Suite Setup       Open Browser    https://demowebshop.tricentis.com/login    Chr
 Suite Teardown    Close Browser
 
 *** Test Cases ***
+
+
 Aanmelden met geldige gegevens
     [Documentation]    De gebruiker meldt zich aan met geldige gegevens.
   #  Given    De gebruiker is op de aanmeldingspagina van de Demo Webshop

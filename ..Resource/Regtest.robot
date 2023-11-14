@@ -1,16 +1,21 @@
 *** Settings ***
 Library    SeleniumLibrary
+Library    RPA.RobotLogListener
 #Resource    ..resource\email.random.robot
 
 
+Resource    Homepage_POM.robot
 
 *** Variables ***
 ${URL12}          https://demowebshop.tricentis.com/register  
 ${Url13}         https://demowebshop.tricentis.com/onepagecheckout
 ${URL19}        https://demowebshop.tricentis.com/
 ${URL16}          https://demowebshop.tricentis.com/login
+${URL99}        https://mijn.cupraofficial.nl/plan_nu_jouw_proefrit?gad_source=1&gclid=CjwKCAjwv-2pBhB-EiwAtsQZFO3ArOtGOWcIap0lmpUp7ZahDdY3VXV5-wD9fdOLAeIXfCFF-U5IqxoC8i0QAvD_BwE&gclsrc=aw.ds
 ${BROWSER}        Chrome
 ${password}       admin123
+${URL100}          https://demoqa.com/date-picker
+${URL101}                 https://www.saucedemo.com/
 
 
 *** Keywords ***
@@ -112,8 +117,107 @@ Generate Random 10-Digit Number
     ${digits}=    Evaluate    ''.join(random.choice('0123456789') for _ in range(10))
     [Return]    ${digits}
 
+{day_locator} =
+    [Arguments]    ${Set Variable}    ${(//div[@class}
+    
 
 *** Test Cases ***
+
+Login Demo Swag Labs
+    Open Browser    ${URL101}    Chrome    options=add_experimental_option("detach", True)	
+    Maximize Browser Window
+    Wait Until Page Contains    Swag Labs
+    Input Text    (//input[@id='user-name'])[1]    standard_user
+    Input Text    (//input[@id='password'])[1]    secret_sauce
+    Click Element    (//input[@id='login-button'])[1]
+    Sleep    3
+    Click Element    (//button[@id='add-to-cart-sauce-labs-bike-light'])[1]
+    Click Element    (//a[@class='shopping_cart_link'])[1]
+    Sleep    2
+    Click Element    (//button[normalize-space()='Checkout'])[1]
+
+    ${first_name}    Generate Random First Name
+    ${last_name}     Generate Random Last Name
+
+    Input Text    (//input[@id='first-name'])[1]    ${first_name}
+    Input Text    (//input[@id='last-name'])[1]      ${last_name}
+    Input Text    (//input[@id='postal-code'])[1]    2033xr
+    Click Element    (//input[@id='continue'])[1]
+    Click Element    (//button[normalize-space()='Finish'])[1]
+     Sleep    2s 
+    Execute JavaScript    window.scrollTo(0, 750);
+    
+
+    ${expected_text}    Set Variable    Thank you for your order!
+    ${actual_text}    Get Text    (//h2[normalize-space()='Thank you for your order!'])[1]   
+    Should Be Equal    ${actual_text}    ${expected_text}
+
+    Close Browser
+
+
+
+
+
+
+
+
+Open datumplanner
+    Open Browser    ${URL100}    Chrome    options=add_experimental_option("detach", True)	
+    Maximize Browser Window
+    Wait Until Page Contains    Date Picker
+    Sleep    5
+    Click Element    (//input[@id='dateAndTimePickerInput'])[1]
+    Sleep    2
+    Click Element    (//div[@aria-label='Choose Thursday, November 9th, 2023'])[1]
+    Click Element    (//li[normalize-space()='14:15'])[1]
+    
+
+
+
+
+Open Proefritplanner
+    Open Browser    ${URL99}    Chrome
+    Maximize Browser Window
+    Wait Until Page Contains    Plan jouw proefrit
+    Sleep    3
+    Click Element    (//a[normalize-space()='Alles accepteren'])[1]
+    Sleep    5
+    #Wait Until Element Is Visible    delivery-0Hh4H000000k9gZSAQ-33
+    Click Element    delivery-0Hh4H000000k9gZSAQ-33
+    Sleep    2
+    Wait Until Element Is Visible    0Hn4H000000CcuZSAS-76
+    Click Element    0Hn4H000000CcuZSAS-76
+
+     FOR    ${day}    IN RANGE    1    32   # Ga ervan uit dat er maximaal 31 dagen zijn
+        ${day_locator} =    Set Variable    (//div[@class='section slds-grid slds-gutters slds-wrap'])[${day}]
+        ${is_day_clickable} =    Run Keyword And Return Status    Element Should Be Visible    ${day_locator}
+        ${is_day_in_future} =    Run Keyword And Return Status    Element Should Be Visible    ${day_locator}
+        Run Keyword If ${is_day_clickable} and ${is_day_in_future}
+            Click Element    ${day_locator}
+            Exit For Loop
+      END
+
+    Click Element    (//button[normalize-space()='28'])[1]
+    Click Element    (//button[normalize-space()='13:00'])[1]
+    Click Element    (//button[normalize-space()='Persoonsgegevens invullen'])[1]
+    Sleep    5
+
+    ${first_name}    Generate Random First Name
+    ${last_name}     Generate Random Last Name
+
+    Input Text    (//button[normalize-space()='Persoonsgegevens invullen'])[1]     ${first_name}
+    Input Text    (//input[@id='input-255'])[1]      ${last_name}
+    
+    Sleep    2s  #
+    ${random_email}=    Execute JavaScript    return Math.random().toString(36).substring(7) + "@example.com"
+    Input Text    (//input[@id='input-260'])[1]]    ${random_email}
+    #opslaan
+    Set Global Variable    ${random_email}
+    
+    Input Text    (//input[@id='input-260'])[1]    0641414141
+           
+
+
 Open Register page enter same email
     Open Browser    ${URL12}    Chrome
     Maximize Browser Window

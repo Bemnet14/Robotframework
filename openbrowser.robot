@@ -16,4 +16,5 @@ Input username
 Login Test
     Open Browser    ${URL}    ${BROWSER}
     Click Link    /html/body/div[4]/div[1]/div[2]/ul[1]/li[1]/a
+    Sleep    5
     Close Browser
